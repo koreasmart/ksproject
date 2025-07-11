@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+    <head>
+        <meta charset="utf-8" />
+	    <title th:text="${title}">Nest Dashboard</title>
+	    <meta http-equiv="x-ua-compatible" content="ie=edge" />
+	    <meta name="viewport" content="width=device-width, initial-scale=1" />
+	    <!-- Favicon -->
+	    <link rel="shortcut icon" type="image/x-icon" th:href="@{/manage/assets/imgs/theme/favicon.svg}" />
+	    <!-- Template CSS -->
+	    <link href="/manage/assets/css/main.css?v=1.1" rel="stylesheet" type="text/css" />
+    </head>
+
+    <body>
+        <div class="container">
+            <div class="row">
+                <section class="content-main">
+                    <div class="row mt-60">
+                        <div class="col-sm-12">
+                            <div class="w-50 mx-auto text-center">
+                                <h1 class="mt-40 mb-20">앗! 뭔가 문제가 생겼어요</h1>
+                                <p class="fs-6 mb-10">문제가 해결중에 있습니다. 다시 한번 시도해주세요.</p>
+                                <p class="fs-6 mb-10">관리자에게 문의하세요!</p>
+                                <p class="fs-6">tel) 063-717-1008</p>
+                                <a th:href="|@{${homeUrl}}|" class="btn btn-primary mt-4"><i class="material-icons md-keyboard_return"></i> 홈으로 이동</a>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+            </div>
+        </div>
+        <div class="screen-overlay"></div>
+                
+        <script th:src="@{/manage/assets/js/vendors/jquery-3.6.0.min.js}"></script>
+	    <script th:src="@{/manage/assets/js/vendors/bootstrap.bundle.min.js}"></script>
+	    <script th:src="@{/manage/assets/js/vendors/select2.min.js}"></script>
+	    <script th:src="@{/manage/assets/js/vendors/perfect-scrollbar.js}"></script>
+	    <script th:src="@{/manage/assets/js/vendors/jquery.fullscreen.min.js}"></script>
+	    <!-- Main Script -->
+	    <script th:src="@{/manage/assets/js/main.js?v=1.1}" type="text/javascript"></script>
+	    
+    </body>
+</html>

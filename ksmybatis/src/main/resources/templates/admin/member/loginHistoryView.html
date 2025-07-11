@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+	  xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+	  layout:decorate="~{admin/layout/layout_main}">
+	
+	<head>
+		<meta name="description" content="한국스마트정보교육원 ksmybatis" />
+	</head>
+	
+	<!-- 추가할 js file -->
+	<th:block layout:fragment="jsFile">
+	</th:block>
+	
+	<!-- 추가할 script -->
+	<th:block layout:fragment="jsScript">
+		<script>
+
+		</script>
+	</th:block>
+	
+	<!-- 추가할 페이지 contents -->
+	<th:block layout:fragment="contents">
+		<div class="content-header">
+            <div>
+                <h2 class="content-title card-title" th:text="${title}"></h2>
+            </div>
+        </div>
+        <div class="card mb-4">
+            <header class="card-header">
+                <div class="row gx-3">
+                    <div class="col-lg-4 col-md-6 me-auto">
+                        <input type="text" placeholder="Search..." class="form-control" />
+                    </div>
+                    <div class="col-lg-2 col-6 col-md-3">
+                        <select class="form-select">
+                            <option>Status</option>
+                            <option>Active</option>
+                            <option>Disabled</option>
+                            <option>Show all</option>
+                        </select>
+                    </div>
+                    <div class="col-lg-2 col-6 col-md-3">
+                        <select class="form-select">
+                            <option>Show 20</option>
+                            <option>Show 30</option>
+                            <option>Show 40</option>
+                        </select>
+                    </div>
+                </div>
+            </header>
+            <!-- card-header end// -->
+            <div class="card-body">
+                <div class="table-responsive">
+                    <table class="table table-hover">
+                        <thead>
+                            <tr class="text-center">
+                                <th scope="col">
+                                	<div class="form-check align-middle">
+                                		<input type="checkbox" class="form-check-input" id="allCheck"/>
+                                	</div>
+								</th>
+                                <th scope="col">로그인번호</th>
+                                <th scope="col">로그인아이디</th>
+                                <th scope="col">로그인아이피</th>
+                                <th scope="col">로그인일시</th>
+                                <th scope="col">회원이름</th>
+                                <th scope="col">회원등급</th>
+                                <th scope="col">회원이메일</th>
+                            </tr>
+                        </thead>
+                        <tbody class="text-center">
+                            <tr th:if="${not #lists.isEmpty(loginHistoryList)}"
+                            	th:each="l : ${loginHistoryList}">
+                                <td>
+                                	<div class="form-check align-middle">
+                                		<input type="checkbox" class="form-check-input checkId" th:value="${l.loginNum}"/>
+                                	</div>
+                                </td>
+                                <td th:text="${l.loginNum}">로그인번호</td>
+                                <td th:text="${l.loginId}">로그인아이디</td>
+                                <td th:text="${l.loginIP}">로그인 아이피</td>
+                                <td th:text="${l.loginDate}">로그인 일시</td>
+                                <th:block th:object="${l.memberInfo}">                                
+	                                <td th:text="*{memberName}"><b>회원이름</b></td>
+	                                <td th:switch="*{memberLevel}">
+	                                	<span th:case="${'mbr_grd_1'}" class="badge rounded-pill alert-success">관리자</span>
+	                                	<span th:case="'mbr_grd_2'" class="badge rounded-pill alert-warning">판매자</span>
+	                                	<span th:case="*" class="badge rounded-pill alert-info">구매자</span>
+	                                </td>
+	                                <td th:text="*{memberEmail}"><b>회원주소</b></td>
+                                </th:block>
+                            </tr>
+                            <tr th:unless="${not #lists.isEmpty(loginHistoryList)}">
+                            	<td colspan="8">회원 로그인 이력 없음</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+                <!-- table-responsive //end -->
+            </div>
+            <!-- card-body end// -->
+        </div>
+        <!-- card end// -->
+        <div class="pagination-area mt-15 mb-50 d-flex justify-content-end">
+            <nav aria-label="Page navigation example">
+                <ul class="pagination justify-content-start">
+                    <li class="page-item">
+                        <a class="page-link" th:href="@{/admin/member/loginHistory}">
+                        	<i class="material-icons md-first_page" style="vertical-align: middle;"></i>
+                        </a>
+                    </li>
+                    <li class="page-item" th:classappend="${currentPage < 2} ? 'disabled'">
+                        <a class="page-link" th:href="@{/admin/member/loginHistory(currentPage=${currentPage-1})}">
+                        	<i class="material-icons md-chevron_left" style="vertical-align: middle;"></i>
+                        </a>
+                    </li>
+                    <th:block th:each="num : ${#numbers.sequence(startPageNum, endPageNum)}">
+                    	<li class="page-item" th:classappend="${num eq currentPage} ? 'active disabled'">
+                    		<a class="page-link" th:href="@{/admin/member/loginHistory(currentPage=${num})}"
+                    		   th:text="${num < 10 ? '0' + num : num}">01</a>
+                    	</li>
+                    </th:block>                    
+                    <li class="page-item" th:classappend="${currentPage eq lastPage} ? 'disabled'">
+                        <a class="page-link" th:href="@{/admin/member/loginHistory(currentPage=${currentPage+1})}">
+                        	<i class="material-icons md-chevron_right" style="vertical-align: middle;"></i>
+                        </a>
+                    </li>
+                    <li class="page-item">
+                        <a class="page-link" th:href="@{/admin/member/loginHistory(currentPage=${lastPage})}">
+                        	<i class="material-icons md-last_page" style="vertical-align: middle;"></i>
+                        </a>
+                    </li>
+                </ul>
+            </nav>
+        </div>
+	</th:block>
+	
+	
+</html>
+
+
+
+
+
+
+
+
+
+

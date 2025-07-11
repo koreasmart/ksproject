@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf"
+	  xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+	  layout:decorate="~{admin/layout/layout_main}">
+
+	<th:block layout:fragment="contents">
+		<div class="card mb-4">
+			<!-- card-header end// -->
+			<div class="card-body">
+				<div class="table-responsive">
+					<table class="table table-hover">
+						<thead>
+							<tr class="text-center text-success">
+								<th>번호</th>
+								<th>파일이름</th>
+								<th>다운로드</th>
+								<th>이미지</th>
+								<th>삭제</th>
+							</tr>
+						</thead>
+						<tbody class="text-center">
+							<tr th:if="${not #lists.isEmpty(fileList)}" th:each="l, index : ${fileList}">
+								<td th:text="${index.count}"></td>
+								<td th:text="${l.fileOriginalName}"></td>
+								<td>
+									<a th:href="@{/file/download(fileIdx=${l.fileIdx})}">다운로드</a>
+								</td>
+								<td>
+									<img th:src="|@{${l.filePath}}|" th:alt="${l.fileOriginalName}" style="width: 100px;"/>
+								</td>
+								<td>
+									<a th:href="@{/file/deleteFile(fileIdx=${l.fileIdx})}">삭제</a>
+								</td>
+							</tr>
+							<tr th:unless="${not #lists.isEmpty(fileList)}">
+								<td colspan="5">목록이 없습니다.</td>
+							</tr>
+						</tbody>
+					</table>
+					<!-- table-responsive.// -->
+				</div>
+			</div>
+			<!-- card-body end// -->
+		</div>
+	</th:block>
+
+</html>
+
+
+
+
+
+

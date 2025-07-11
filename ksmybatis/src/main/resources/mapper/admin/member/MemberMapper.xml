@@ -1,0 +1,195 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="ksmybatis.admin.member.mapper.MemberMapper">
+	<resultMap type="ksmybatis.admin.member.domain.LoginHistory" id="loginHistoryResultMap">
+		<id 	column="login_no" 		property="loginNum"/>
+		<result column="login_id" 		property="loginId" />
+		<result column="login_ip" 		property="loginIP" />
+		<result column="login_date" 	property="loginDate" />
+		<!-- 1:1 association -->
+		<association property="memberInfo" javaType="ksmybatis.admin.member.domain.Member">
+			<id 	column="mbr_id" 		property="memberId" />
+			<result column="mbr_pw" 		property="memberPw" />
+			<result column="mbr_name" 		property="memberName" />
+			<result column="mbr_grd" 		property="memberLevel" />
+			<result column="comm_nm" 		property="memberLevelName" />
+			<result column="mbr_addr" 		property="memberAddress" />
+			<result column="mbr_daddr" 		property="memberDAddress" />
+			<result column="mbr_zip" 		property="memberZip" />
+			<result column="mbr_telno" 		property="memberTelNo" />
+			<result column="mbr_email" 		property="memberEmail" />
+			<result column="mbr_reg_date" 	property="memberRegDate" />
+		</association>
+	</resultMap>
+	<resultMap type="ksmybatis.admin.member.domain.Member" id="memberResultMap">
+		<id 	column="mbr_id" 		property="memberId" />
+		<result column="mbr_pw" 		property="memberPw" />
+		<result column="mbr_name" 		property="memberName" />
+		<result column="mbr_grd" 		property="memberLevel" />
+		<result column="comm_nm" 		property="memberLevelName" />
+		<result column="mbr_addr" 		property="memberAddress" />
+		<result column="mbr_daddr" 		property="memberDAddress" />
+		<result column="mbr_zip" 		property="memberZip" />
+		<result column="mbr_telno" 		property="memberTelNo" />
+		<result column="mbr_email" 		property="memberEmail" />
+		<result column="mbr_reg_date" 	property="memberRegDate" />
+	</resultMap>
+	
+	<select id="getLoginHistoryList" parameterType="ksmybatis.systems.utils.Pageable" resultMap="loginHistoryResultMap">
+		/* 로그인이력 조회 */
+		SELECT
+			mll.login_no,
+			mll.login_id,
+			mll.login_ip,
+			mll.login_date,
+			m.mbr_name,
+			m.mbr_grd,
+			m.mbr_email 
+		FROM 
+			members_login_log mll INNER JOIN members m 
+			ON mll.login_id = m.mbr_id 
+		ORDER BY mll.login_no 
+		LIMIT #{rowPerPage} OFFSET #{offset};
+	</select>
+	
+	<select id="getMemberLoginLogCount" resultType="int">
+		/* 로그인이력 테이블의 총행의 갯수 조회 */
+		SELECT
+			COUNT(1)
+		FROM 
+			members_login_log mll;
+	</select>
+	
+	<delete id="removeMemberById" parameterType="string">
+		/* 회원 탈퇴 */
+		DELETE 
+		FROM 
+			members
+		WHERE 
+			mbr_id = #{memberId};
+	</delete>
+	
+	<delete id="removeMemberLoginLogById" parameterType="string">
+		/* 특정회원 로그인이력 삭제 */
+		DELETE 
+		FROM 
+			members_login_log
+		WHERE 
+			login_id = #{memberId};
+	</delete>
+	
+	<update id="modifyMemberInfo" parameterType="Member">
+		/* 특정회원 수정 */
+		UPDATE members
+		<trim prefix="SET" suffixOverrides=",">
+			<if test="memberPw != null and memberPw != ''">
+				mbr_pw = #{memberPw},
+			</if>
+			<if test="memberName != null and memberName != ''">
+				mbr_name = #{memberName},
+			</if>
+			<if test="memberLevel != null and memberLevel != ''">
+				mbr_grd = #{memberLevel},
+			</if>
+			<if test="memberAddress != null and memberAddress != ''">
+				mbr_addr = #{memberAddress},
+			</if>
+			<if test="memberDAddress != null and memberDAddress != ''">
+				mbr_daddr = #{memberDAddress},
+			</if>
+			<if test="memberZip != null and memberZip != ''">
+				mbr_zip = #{memberZip},
+			</if>
+			<if test="memberTelNo != null and memberTelNo != ''">
+				mbr_telno = #{memberTelNo},
+			</if>
+			<if test="memberEmail != null and memberEmail != ''">
+				mbr_email = #{memberEmail},
+			</if>
+		</trim>
+		WHERE 
+			mbr_id = #{memberId};
+	</update>
+	
+	<select id="getMemberInfoById" parameterType="String" resultMap="memberResultMap">
+		/* 특정회원 조회 */
+		SELECT 
+			m.mbr_id, 
+			m.mbr_pw, 
+			m.mbr_name, 
+			m.mbr_grd,
+			cc.comm_nm, 
+			m.mbr_addr, 
+			m.mbr_daddr, 
+			m.mbr_zip, 
+			m.mbr_telno, 
+			m.mbr_email, 
+			m.mbr_reg_date
+		FROM 
+			members m INNER JOIN comm_code cc
+			ON m.mbr_grd = cc.comm_cd
+		WHERE
+			m.mbr_id = #{memberId};
+	</select>
+	
+	<insert id="addMember" parameterType="Member">
+		/* 회원등록 */
+		INSERT INTO members
+		(mbr_id, mbr_pw, mbr_name, mbr_grd, mbr_addr, 
+		 mbr_daddr, mbr_zip, mbr_telno, mbr_email, mbr_reg_date)
+		VALUES
+		(#{memberId}, #{memberPw}, #{memberName}, #{memberLevel}, #{memberAddress}, 
+		 #{memberDAddress}, #{memberZip}, #{memberTelNo}, #{memberEmail}, CURDATE());
+	</insert>
+	
+	<select id="checkMemberById" parameterType="string" resultType="boolean">
+		/* 아이디 중복 체크 */
+		SELECT 
+			COUNT(*)
+		FROM 
+			members m
+		WHERE 
+			m.mbr_id = #{memberId};
+	</select>
+
+	<select id="getMemberList" resultMap="memberResultMap">
+		/* 회원목록조회 */
+		SELECT 
+			m.mbr_id, 
+			m.mbr_pw, 
+			m.mbr_name, 
+			m.mbr_grd,
+			cc.comm_nm, 
+			m.mbr_addr, 
+			m.mbr_daddr, 
+			m.mbr_zip, 
+			m.mbr_telno, 
+			m.mbr_email, 
+			m.mbr_reg_date
+		FROM 
+			members m INNER JOIN comm_code cc
+			ON m.mbr_grd = cc.comm_cd
+		ORDER BY CAST(SUBSTRING_INDEX(m.mbr_id,'ksmartid',-1) AS UNSIGNED);
+	</select>
+	<!-- <select id="getMemberList" resultType="ksmybatis.admin.member.domain.Member">
+		/* 회원목록조회 */
+		SELECT 
+			mbr_id 			AS memberId, 
+			mbr_pw 			AS memberPw, 
+			mbr_name 		AS memberName, 
+			mbr_grd 		AS memberLevel,
+			cc.comm_nm 		AS memberLevelName, 
+			mbr_addr 		AS memberAddress, 
+			mbr_daddr 		AS memberDAddress, 
+			mbr_zip 		AS memberZip, 
+			mbr_telno 		AS memberTelNo, 
+			mbr_email 		AS memberEmail, 
+			mbr_reg_date 	AS memberRegDate
+		FROM 
+			members m INNER JOIN comm_code cc
+			ON m.mbr_grd = cc.comm_cd
+		ORDER BY CAST(SUBSTRING_INDEX(mbr_id,'ksmartid',-1) AS UNSIGNED);
+	</select> -->
+</mapper>

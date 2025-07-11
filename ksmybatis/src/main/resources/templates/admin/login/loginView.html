@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+    <head>
+        <meta charset="utf-8" />
+	    <title th:text="${title}">Nest Dashboard</title>
+	    <meta http-equiv="x-ua-compatible" content="ie=edge" />
+	    <meta name="viewport" content="width=device-width, initial-scale=1" />
+	    <!-- Favicon -->
+	    <link rel="shortcut icon" type="image/x-icon" th:href="@{/manage/assets/imgs/theme/favicon.svg}" />
+	    <!-- Template CSS -->
+	    <link href="/manage/assets/css/main.css?v=1.1" rel="stylesheet" type="text/css" />
+    </head>
+
+    <body>
+        <main>
+            <header class="main-header style-2 navbar justify-content-center">
+                <div class="col-brand">
+                    <a th:href="@{/admin}" class="brand-wrap">
+                        <img th:src="@{/manage/assets/imgs/theme/logo.svg}" class="logo" alt="Nest Dashboard" />
+                    </a>
+                </div>
+            </header>
+            <section class="content-main mt-80 mb-80">
+                <div class="card mx-auto card-login">
+                    <div class="card-body">
+                        <h4 class="card-title mb-4 text-center">Sign in</h4>
+                        <form id="loginForm" th:action="@{/admin/login}" method="post">
+                            <div class="mb-3">
+                                <input class="form-control" placeholder="회원아이디" type="text" 
+                                	   name="memberId" id="memberId" />
+                            </div>
+                            <!-- form-group// -->
+                            <div class="mb-3">
+                                <input class="form-control" placeholder="회원비밀번호" type="text" 
+                                	   name="memberPw" id="memberPw"/>
+                            </div>
+                            <!-- form-group form-check .// -->
+                            <div class="mb-4">
+                                <button type="submit" class="btn btn-primary w-100 justify-content-center" 
+                                		id="loginBtn">로그인</button>
+                            </div>
+                            <!-- form-group// -->
+                        </form>
+                        <div class="d-grid gap-3 mb-4">
+                            <a href="#" class="btn btn-light w-100 justify-content-center">회원가입</a>
+                        </div>
+                    </div>
+                </div>
+            </section>
+            <footer class="main-footer text-center">
+                <p class="font-xs">
+                    <script>
+                        document.write(new Date().getFullYear());
+                    </script>
+                    &copy; Nest - HTML Ecommerce Template .
+                </p>
+                <p class="font-xs mb-30">All rights reserved</p>
+            </footer>
+        </main>
+        <script th:src="@{/manage/assets/js/vendors/jquery-3.6.0.min.js}"></script>
+	    <script th:src="@{/manage/assets/js/vendors/bootstrap.bundle.min.js}"></script>
+	    <script th:src="@{/manage/assets/js/vendors/jquery.fullscreen.min.js}"></script>
+	    <!-- Main Script -->
+	    <script th:src="@{/manage/assets/js/main.js?v=1.1}" type="text/javascript"></script>
+	    
+	    <script>
+	    	$('#loginBtn').click(e => {
+				e.preventDefault();
+				const $input = $('#loginForm').find('input');
+				let isSubmit = true;
+				$input.each((idx, element)=>{
+					const value = $(element).val();
+					if(!value){
+						const cate = $(element).attr('placeholder');
+						alert(`${cate} 필수 입력항목입니다.`);
+						isSubmit = false;
+						return false;
+					}
+				});
+				if(isSubmit) $('#loginForm').submit();
+	    	});
+	    </script>
+    </body>
+</html>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf"
+	  xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+	  layout:decorate="~{admin/layout/layout_main}">
+	<head>
+		<style type="text/css">
+			.delete-img {
+			    position: absolute;
+			    top: 0;
+			    right: 0;
+			    font-size: 13px;
+			    background-color: #000;
+			    color: #fff;
+			    width: 18px;
+			    height: 18px;
+			    line-height: 16px;
+			    display: inline-block;
+			    text-align: center;
+			    cursor: pointer;
+			    z-index: 99999;
+			}
+		</style>
+	</head>
+	<th:block layout:fragment="contents">
+		<form class="user" th:action="@{/admin/file/fileupload}" method="post" enctype="multipart/form-data">			
+			<div class="row col-lg-6">
+				<div class="card">
+					<div class="card-body">
+						<div class="row">					
+							<div class="col-md-9">
+								<label for="files" class="form-label">단일파일 / 다중파일</label>
+								<div class="input-group">
+		                            <input type="file" id="files" name="files" class="form-control bg-light border-0 small" multiple>
+	                                <button class="btn btn-primary" type="submit">
+	                                	파일업로드
+	                                </button>
+	                        	</div>
+	                        </div>
+						</div>
+					</div>
+				</div>
+			</div>
+		</form>
+		<div class="row col-lg-6">
+			<div class="card">
+				<div class="card-header">
+					<h4>파일미리보기</h4>
+				</div>
+				<div class="card-body">
+					<div class="row" id="preview">					
+						
+					</div>
+				</div>
+			</div>
+		</div>
+	</th:block>
+	<th:block layout:fragment="jsScript">
+    	<script>
+    		$('#files').change(function(){
+    			$('#preview').empty();
+    			const files = this.files;
+    			const fileList = [...files];
+    			fileList.forEach(function(file, idx){
+   	              
+   	              //div에 이미지 추가
+   	              const imgDiv = $('<div class="col-md-3 img-box" style="position:relative"></div>');
+   	              const lastModified = files[idx].lastModified;
+   	              //이미지 파일 미리보기
+   	              if(file.type.match('image.*')){
+   	                  //파일을 읽기 위한 FileReader객체 생성
+   	                  const reader = new FileReader(); 
+   	                  reader.onload = function (e) { 
+   	                      //파일 읽어들이기를 성공했을때 호출되는 이벤트 핸들러
+   	                      const img = $('<img />', {src: e.target.result, id : lastModified });
+   	                      const span = $('<span />', {'class': 'delete-img', 'data-remove-key' : lastModified}).text('X');
+   	                      imgDiv.append(img,span);
+   	                      imgDiv.appendTo('#preview');
+   	                  } 
+   	                  reader.readAsDataURL(file);
+   	              }else{
+   	                  //이미지 파일 아닐 경우 대체 이미지
+   	                  const noImage = $('<img />', { src : '/manage/assets/imgs/theme/upload.svg', id : lastModified });
+   	               	  const span = $('<span />', {'class': 'delete-img', 'data-remove-key' : lastModified}).text('X');
+   	                  imgDiv.append(noImage, span);
+   	                  imgDiv.appendTo('#preview');
+   	                  
+   	              }
+   	          })
+    		});
+    		
+    		$(document).on('click', '.delete-img',function(){
+    			const files = $("#files").prop('files');
+    			
+    	        const dataTranster = new DataTransfer();
+    	        const removeTargetId = $(this).attr('data-remove-key');
+    	        
+    	        Array.from(files)
+    	        	 .filter(file => file.lastModified != removeTargetId)
+	    	         .forEach(file => dataTranster.items.add(file));
+    	 
+    	        $('#files')[0].files = dataTranster.files;
+    	 
+    	        $(this).closest('.img-box').remove();
+    	 
+    		});
+    	</script>
+    </th:block>
+</html>

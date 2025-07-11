@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+	  xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+	  layout:decorate="~{admin/layout/layout_main}">
+	
+	<head>
+		<meta name="description" content="한국스마트정보교육원 ksmybatis" />
+	</head>
+	
+	<!-- 추가할 js file -->
+	<th:block layout:fragment="jsFile">
+	</th:block>
+	
+	<!-- 추가할 script -->
+	<th:block layout:fragment="jsScript">
+		<script>
+
+		</script>
+	</th:block>
+	
+	<!-- 추가할 페이지 contents -->
+	<th:block layout:fragment="contents">
+		<div class="content-header">
+            <div>
+                <h2 class="content-title card-title" th:text="${title}"></h2>
+            </div>
+        </div>
+        <div class="card mb-4">
+            <header class="card-header">
+                <div class="row gx-3">
+                    <div class="col-lg-4 col-md-6 me-auto">
+                        <input type="text" placeholder="Search..." class="form-control" />
+                    </div>
+                    <div class="col-lg-2 col-6 col-md-3">
+                        <select class="form-select">
+                            <option>Status</option>
+                            <option>Active</option>
+                            <option>Disabled</option>
+                            <option>Show all</option>
+                        </select>
+                    </div>
+                    <div class="col-lg-2 col-6 col-md-3">
+                        <select class="form-select">
+                            <option>Show 20</option>
+                            <option>Show 30</option>
+                            <option>Show 40</option>
+                        </select>
+                    </div>
+                </div>
+            </header>
+            <!-- card-header end// -->
+            <div class="card-body">
+                <div class="table-responsive">
+                    <table class="table table-hover">
+                        <thead>
+                            <tr class="text-center">
+                                <th scope="col">
+                                	<div class="form-check align-middle">
+                                		<input type="checkbox" class="form-check-input" id="allCheck"/>
+                                	</div>
+								</th>
+                                <th scope="col">거래처코드</th>
+                                <th scope="col">거래처명</th>
+                                <th scope="col">거래처연락처</th>
+                                <th scope="col">담당자아이디</th>
+                                <th scope="col">담당자이름</th>
+                                <th scope="col">담당자이메일</th>
+                                <th scope="col">상품코드</th>
+                                <th scope="col">상품명</th>
+                                <th scope="col">상품단가</th>
+                            </tr>
+                        </thead>
+                        <tbody class="text-center">
+                            <th:block th:if="${not #lists.isEmpty(sellerList)}"
+                            	th:each="l : ${sellerList}">
+                            	<th:block th:each="p : ${l.productList}" th:object="${l.sellerInfo}">
+                            		<tr>
+		                                <td>
+		                                	<div class="form-check align-middle">
+		                                		<input type="checkbox" class="form-check-input checkId" th:value="${l.vendorCode}"/>
+		                                	</div>
+		                                </td>
+		                                <td th:text="${l.vendorCode}">거래처코드</td>
+		                                <td th:text="${l.vendorName}">거래처명</td>
+		                                <td th:text="${l.VendorTelNo}">거래처연락처</td>
+		                                <td th:text="*{memberId}">담당자아이디</td>
+		                                <td th:text="*{memberName}">담당자명</td>
+		                                <td th:text="*{memberEmail}">담당자이메일</td>
+		                                <td th:text="${p.productCode}">상품코드</td>
+		                                <td th:text="${p.productName}">상품명</td>
+		                                <td th:text="${p.productUnitPrice}">상품단가</td>
+	                                </tr>
+                            	</th:block>
+                            </th:block>
+                            <tr th:unless="${not #lists.isEmpty(sellerList)}">
+                            	<td colspan="8">등록된 판매자 없음</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+                <!-- table-responsive //end -->
+            </div>
+            <!-- card-body end// -->
+        </div>
+        
+        <div th:replace="~{admin/fragments/pagination :: paginationFragment(path='/admin/vendors/sellerList')}"></div>
+        <!--/* card end// 
+        <div class="pagination-area mt-15 mb-50 d-flex justify-content-end">
+            <nav aria-label="Page navigation example">
+                <ul class="pagination justify-content-start">
+                    <li class="page-item">
+                        <a class="page-link" th:href="@{/admin/member/loginHistory}">
+                        	<i class="material-icons md-first_page" style="vertical-align: middle;"></i>
+                        </a>
+                    </li>
+                    <li class="page-item" th:classappend="${currentPage < 2} ? 'disabled'">
+                        <a class="page-link" th:href="@{/admin/member/loginHistory(currentPage=${currentPage-1})}">
+                        	<i class="material-icons md-chevron_left" style="vertical-align: middle;"></i>
+                        </a>
+                    </li>
+                    <th:block th:each="num : ${#numbers.sequence(startPageNum, endPageNum)}">
+                    	<li class="page-item" th:classappend="${num eq currentPage} ? 'active disabled'">
+                    		<a class="page-link" th:href="@{/admin/member/loginHistory(currentPage=${num})}"
+                    		   th:text="${num < 10 ? '0' + num : num}">01</a>
+                    	</li>
+                    </th:block>                    
+                    <li class="page-item" th:classappend="${currentPage eq lastPage} ? 'disabled'">
+                        <a class="page-link" th:href="@{/admin/member/loginHistory(currentPage=${currentPage+1})}">
+                        	<i class="material-icons md-chevron_right" style="vertical-align: middle;"></i>
+                        </a>
+                    </li>
+                    <li class="page-item">
+                        <a class="page-link" th:href="@{/admin/member/loginHistory(currentPage=${lastPage})}">
+                        	<i class="material-icons md-last_page" style="vertical-align: middle;"></i>
+                        </a>
+                    </li>
+                </ul>
+            </nav>
+        </div>
+        */-->
+	</th:block>
+	
+	
+</html>
+
+
+
+
+
+
+
+
+
+

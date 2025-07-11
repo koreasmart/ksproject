@@ -1,0 +1,96 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="ksmybatis.admin.vendors.mapper.VendorsMapper">
+	
+	<resultMap type="Vendors" id="vendorResultMap">
+		<id 	column="vend_cd" 		property="vendorCode" />
+		<result column="vend_mbr_id" 	property="vendorMemberId" />
+		<result column="vend_brno" 		property="vendorBrno" />
+		<result column="vend_name" 		property="vendorName" />
+		<result column="vend_addr" 		property="vendorAddress" />
+		<result column="vend_daddr" 	property="vendorDAddress" />
+		<result column="vend_zip" 		property="vendorZip" />
+		<result column="vend_telno" 	property="vendorTelNo" />
+		
+		<!-- 1:1 association -->
+		<association property="sellerInfo" javaType="Member">
+			<id 	column="mbr_id" 		property="memberId" />
+			<result column="mbr_pw" 		property="memberPw" />
+			<result column="mbr_name" 		property="memberName" />
+			<result column="mbr_grd" 		property="memberLevel" />
+			<result column="comm_nm" 		property="memberLevelName" />
+			<result column="mbr_addr" 		property="memberAddress" />
+			<result column="mbr_daddr" 		property="memberDAddress" />
+			<result column="mbr_zip" 		property="memberZip" />
+			<result column="mbr_telno" 		property="memberTelNo" />
+			<result column="mbr_email" 		property="memberEmail" />
+			<result column="mbr_reg_date" 	property="memberRegDate" />
+		</association>
+		<!-- 1:N collection -->
+		<collection property="productList" ofType="ksmybatis.admin.products.domain.Products">
+			<id 	column="prod_cd" 		property="productCode" />
+			<result column="vend_cd" 		property="vendorCode" />
+			<result column="prod_name" 		property="productName" />
+			<result column="prod_untprc" 	property="productUnitPrice" />
+			<result column="prod_reg_date" 	property="productRegDate" />
+		</collection>
+	</resultMap>
+	
+	<select id="getSellerListCount" resultType="int">
+		/* 판매자 현황 갯수조회 */
+		SELECT 
+			count(1)
+		FROM 
+			products p INNER JOIN vendors v 
+			ON p.vend_cd = v.vend_cd
+			INNER JOIN members m 
+			ON v.vend_mbr_id = m.mbr_id;
+	</select>
+	
+	<select id="getSellerList" parameterType="ksmybatis.systems.utils.Pageable" resultMap="vendorResultMap">
+		/* 판매자 현황 조회 */
+		SELECT 
+			v.vend_cd,
+			v.vend_name,
+			v.vend_telno,
+			m.mbr_id,
+			m.mbr_name,
+			m.mbr_email, 
+			p.prod_cd,
+			p.prod_name,
+			p.prod_untprc
+		FROM 
+			products p INNER JOIN vendors v 
+			ON p.vend_cd = v.vend_cd
+			INNER JOIN members m 
+			ON v.vend_mbr_id = m.mbr_id 
+		ORDER BY v.vend_cd
+		LIMIT #{rowPerPage} OFFSET #{offset};
+	</select>
+	
+	<delete id="removeVendorsBySellerId" parameterType="string">
+		/* 판매자 거래처 삭제 */
+		DELETE 
+		FROM 
+			vendors
+		WHERE 
+			vend_mbr_id = #{sellerId};
+	</delete>
+
+	<select id="getVendorList" resultMap="vendorResultMap">
+		/* 거래처 조회 */
+		SELECT 
+			vend_cd, 
+			vend_mbr_id, 
+			vend_brno, 
+			vend_name, 
+			vend_addr, 
+			vend_daddr, 
+			vend_zip, 
+			vend_telno
+		FROM 
+			vendors;
+	</select>
+</mapper>

@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="ksmybatis.admin.orders.mapper.OrdersMapper">
+	
+	<delete id="removeOrdersById" parameterType="string">
+		/* 구매자 주문이력 삭제 */
+		DELETE 
+		FROM 
+			orders 
+		WHERE 
+			cust_id = #{customerId};
+	</delete>
+	
+	<delete id="removeOrderItemsByNum" parameterType="list">
+		/* 구매번호로 구매상세이력 삭제 */
+		DELETE 
+		FROM 
+			orderitems
+		WHERE 
+			order_no IN
+			<foreach collection="list" item="orderNum" open="(" close=")" separator=",">
+				#{orderNum}
+			</foreach>
+	</delete>
+	
+	<select id="getOrdersNumById" parameterType="string" resultType="integer">
+		/* 구매자 구매번호 조회 */
+		SELECT 
+			order_no 
+		FROM 
+			orders 
+		WHERE 
+			cust_id = #{customerId};
+	</select>
+	
+	<delete id="removeOrderItemsBySellerId" parameterType="string">
+		/* 판매자가 등록한 상품을 구매한 이력 삭제 */
+		DELETE 
+			 oi
+		FROM 
+			vendors v INNER JOIN products p 
+			USING (vend_cd)
+			INNER JOIN orderitems oi 
+			ON p.prod_cd = oi.order_prod_cd
+		WHERE 
+			v.vend_mbr_id = #{sellerId};
+	</delete>
+</mapper>
+
+
+
+
+
+
+
